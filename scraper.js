@@ -16,7 +16,7 @@ async function scrapeGoogleMapsReviews(url) {
 
   // Get the number of reviews
   const reviewAmount = await page.evaluate(() => {
-    const reviewString = document.querySelector("#QA0Szd > div > div > div.w6VYqd > div:nth-child(2) > div > div.e07Vkf.kA9KIf > div > div > div.m6QErb.DxyBCb.kA9KIf.dS8AEf > div.PPCwl > div > div.jANrlb > div.fontBodySmall").textContent;
+    const reviewString = document.querySelector('#QA0Szd > div > div > div.w6VYqd > div:nth-child(2) > div > div.e07Vkf.kA9KIf > div > div > div.m6QErb.DxyBCb.kA9KIf.dS8AEf > div.PPCwl > div > div.jANrlb > div.fontBodySmall').textContent;
     return parseInt(reviewString.match(/^\d+/));
   });
 
@@ -29,7 +29,7 @@ async function scrapeGoogleMapsReviews(url) {
 
   while (endLoop) {
     await page.evaluate(() => {
-      const leftside = document.querySelector("#QA0Szd > div > div > div.w6VYqd > div:nth-child(2) > div > div.e07Vkf.kA9KIf > div > div > div.m6QErb.DxyBCb.kA9KIf.dS8AEf");
+      const leftside = document.querySelector('#QA0Szd > div > div > div.w6VYqd > div:nth-child(2) > div > div.e07Vkf.kA9KIf > div > div > div.m6QErb.DxyBCb.kA9KIf.dS8AEf');
       leftside.scrollBy(0, leftside.clientHeight * 2);
       leftside.scrollBy(0, -10);
     });
