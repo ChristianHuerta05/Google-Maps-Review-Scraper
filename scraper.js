@@ -3,6 +3,7 @@ const puppeteer = require('puppeteer');
 
 async function scrapeGoogleMapsReviews(url) {
   // Launch Puppeteer browser
+  try {
   const browser = await puppeteer.launch({
     headless: true,
     args: ['--no-sandbox', '--disabled-setuid-sandbox'],
@@ -106,6 +107,11 @@ async function scrapeGoogleMapsReviews(url) {
  
   await browser.close(); // Close the browser
   return reviews; //return array of objects with reviews
+} catch (error) {
+  console.error('An error occurred:', error);
+  return []; // Return an empty array if error is caught
+
+}
 }
 
 
