@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer');
+const {Storage} = require('@google-cloud/storage');
 
 
 async function scrapeGoogleMapsReviews(url) {
@@ -11,11 +12,21 @@ async function scrapeGoogleMapsReviews(url) {
   const page = await browser.newPage();
 
 
+//create google cloud storage object
+const googleCloud = new Storage({
+keyFilename: 'path location to key file.json',
+projectId: 'project id number,found in key file'
+});
+
+
+
   // Navigate to the review page
   await page.goto(url);
 
 
+
   // Get the number of reviews
+  let reviewOn;
   const reviewAmount = await page.evaluate(() => {
     const reviewString = document.querySelector('#QA0Szd > div > div > div.w6VYqd > div:nth-child(2) > div > div.e07Vkf.kA9KIf > div > div > div.m6QErb.DxyBCb.kA9KIf.dS8AEf > div.PPCwl > div > div.jANrlb > div.fontBodySmall').textContent;
     return parseInt(reviewString.match(/^\d+/));
@@ -41,7 +52,7 @@ async function scrapeGoogleMapsReviews(url) {
 
     endLoop = await page.evaluate((reviewAmount) => {
       currentReview = document.querySelectorAll('div.d4r55');
-
+  
 
       if (document.querySelectorAll('div.d4r55').length == reviewAmount) {
         return false;
@@ -67,7 +78,7 @@ async function scrapeGoogleMapsReviews(url) {
 
 
     prevNum = numOn;
-   
+   reviewOn = numOn;
   }
 
 
@@ -80,10 +91,10 @@ async function scrapeGoogleMapsReviews(url) {
   });
 
 
-  // Extract reviews
+  
   const reviews = [];
 
-
+// Extract reviews and adds them too array
   for (let x = 0; x < reviewAmount; x++) {
     reviews.push(await page.evaluate((counter) => {
       const name = document.querySelectorAll('div.d4r55')[counter].textContent;
@@ -104,9 +115,22 @@ async function scrapeGoogleMapsReviews(url) {
   }
 
 
+
+
+
+  //Sends reviews in JSON format to the bucket, fill in bucketName with the bucket name in google cloud and fileName should be the desired name of the JSON file that will be uploaded
+  async function uploadFile(jsonReviews) {
+    const bucketName = 'BUCKET NAME HERE';
+    const fileName = 'NAME OF FILE.json';
+  
+    await googleCloud.bucket(bucketName).file(fileName).save(jsonReviews);
+  }
+
+  //runs function
+  uploadFile(JSON.stringify({reviewOn,reviews})).catch(console.error);
  
   await browser.close(); // Close the browser
-  return reviews; //return array of objects with reviews
+  return JSON.stringify({reviewOn,reviews}); //return array of objects with reviews in json format
 } catch (error) {
   console.error('An error occurred:', error);
   return []; // Return an empty array if error is caught
