@@ -27,7 +27,7 @@ projectId: 'project id number,found in key file'
 
   // Get the number of reviews
   let reviewOn;
-  const reviewAmount = await page.evaluate(() => {
+  let reviewAmount = await page.evaluate(() => {
     const reviewString = document.querySelector('#QA0Szd > div > div > div.w6VYqd > div:nth-child(2) > div > div.e07Vkf.kA9KIf > div > div > div.m6QErb.DxyBCb.kA9KIf.dS8AEf > div.PPCwl > div > div.jANrlb > div.fontBodySmall').textContent;
     return parseInt(reviewString.match(/^\d+/));
   });
@@ -72,8 +72,7 @@ projectId: 'project id number,found in key file'
     }
   //throw error if page does not load
     if (loopCounter > 1000 ) {
-      await browser.close();
-     throw new Error("Error: Google review page stopped loading");
+      break;
     }
 
 
@@ -94,6 +93,8 @@ projectId: 'project id number,found in key file'
   
   const reviews = [];
 
+
+  reviewAmount = reviewOn;
 // Extract reviews and adds them too array
   for (let x = 0; x < reviewAmount; x++) {
     reviews.push(await page.evaluate((counter) => {
