@@ -102,11 +102,12 @@ projectId: 'project id number,found in key file'
       const rating = document.querySelectorAll('span.kvMYJc')[counter].getAttribute('aria-label');
 
 
-      let text = document.querySelectorAll('span.wiI7pd')[counter];
-      if (text == undefined) {
+      let textBox = document.querySelectorAll('span.wiI7pd')[counter];
+      let text = '';
+      if (textBox == null) {
         text = '';
       } else {
-        text = text.textContent;
+        text = textBox.textContent;
       }
 
 
