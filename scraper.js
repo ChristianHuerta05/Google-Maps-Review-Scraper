@@ -23,6 +23,21 @@ projectId: 'project id number,found in key file'
   // Navigate to the review page
   await page.goto(url);
 
+  //clicks on the sort element
+await page.evaluate(() =>{
+
+  let sortBTN = document.querySelector('#QA0Szd > div > div > div.w6VYqd > div.bJzME.tTVLSc > div > div.e07Vkf.kA9KIf > div > div > div.m6QErb.DxyBCb.kA9KIf.dS8AEf > div.m6QErb.Pf6ghf.KoSBEe.ecceSd.tLjsW > div.TrU0dc.kdfrQc > button');
+sortBTN.click();
+
+
+});
+
+//clicks on type of sort
+await page.waitForSelector('div[role="menuitemradio"].fxNQSd');
+const element = await page.$('#action-menu > div:nth-child(2)'); //for highest rating '#action-menu > div:nth-child(3)'    for lowest rating '#action-menu > div:nth-child(4)'
+await page.waitForTimeout(2000);
+await element.click();
+await page.waitForTimeout(2000);
 
 
   // Get the number of reviews
@@ -100,24 +115,27 @@ projectId: 'project id number,found in key file'
     reviews.push(await page.evaluate((counter) => {
       const name = document.querySelectorAll('div.d4r55')[counter].textContent;
       const rating = document.querySelectorAll('span.kvMYJc')[counter].getAttribute('aria-label');
+//checks if element has review
+const reviewDiv = document.querySelectorAll('div.jJc9Ad')[counter];
+let text = '';
 
+try {
+  const textBox = reviewDiv.querySelector('span.wiI7pd');
 
-      let textBox = document.querySelectorAll('span.wiI7pd')[counter];
-      let text = '';
-      if (textBox == null) {
-        text = '';
-      } else {
-        text = textBox.textContent;
-      }
+  if (textBox === undefined) {
+    throw new Error('Element not found');
+  }
 
+  text = textBox.textContent;
+} catch (error) {
+  text = '';
+}
+//if not error is thrown and text is set ''
 
       const date = document.querySelectorAll('span.rsqaWe')[counter].textContent;
       return { name, rating, text, date };
     }, x));
   }
-
-
-
 
 
   //Sends reviews in JSON format to the bucket, fill in bucketName with the bucket name in google cloud and fileName should be the desired name of the JSON file that will be uploaded
